@@ -33,3 +33,24 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+#supabase
+process.env.NEXT_PUBLIC_SUPABASE_URL
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+# Dependencies
+/node_modules
+
+# Next.js build output
+/.next
+/out
+
+# Environment files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Other files and directories to ignore
+.DS_Store
+*.log

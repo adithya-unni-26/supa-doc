@@ -1,15 +1,41 @@
+'use client';
+
+import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabaseClient'
 
 import { Button } from '@/components/Button'
-import { SelectField, TextField } from '@/components/Fields'
+import { TextField } from '@/components/Fields'
 import { Logo } from '@/components/Logo'
 import { SlimLayout } from '@/components/SlimLayout'
 
-export const metadata = {
-  title: 'Sign Up',
-}
-
 export default function Register() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const router = useRouter()
+
+  const handleRegister = async (event) => {
+    event.preventDefault()
+    setLoading(true)
+    setError(null)
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    })
+
+    if (error) {
+      setError(error.message)
+    } else {
+      router.push('/dashboard')
+    }
+
+    setLoading(false)
+  }
+
   return (
     <SlimLayout>
       <div className="flex">
@@ -31,53 +57,34 @@ export default function Register() {
         to your account.
       </p>
       <form
-        action="#"
+        onSubmit={handleRegister}
         className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2"
       >
         <TextField
-          label="First name"
-          name="first_name"
-          type="text"
-          autoComplete="given-name"
-          required
-        />
-        <TextField
-          label="Last name"
-          name="last_name"
-          type="text"
-          autoComplete="family-name"
-          required
-        />
-        <TextField
-          className="col-span-full"
           label="Email address"
           name="email"
           type="email"
           autoComplete="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
+          className="col-span-full"
         />
         <TextField
-          className="col-span-full"
           label="Password"
           name="password"
           type="password"
           autoComplete="new-password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           required
-        />
-        <SelectField
           className="col-span-full"
-          label="How did you hear about us?"
-          name="referral_source"
-        >
-          <option>AltaVista search</option>
-          <option>Super Bowl commercial</option>
-          <option>Our route 34 city bus ad</option>
-          <option>The “Never Use This” podcast</option>
-        </SelectField>
+        />
+        {error && <p className="text-red-500 col-span-full">{error}</p>}
         <div className="col-span-full">
-          <Button type="submit" variant="solid" color="blue" className="w-full">
+          <Button type="submit" variant="solid" color="blue" className="w-full" disabled={loading}>
             <span>
-              Sign up <span aria-hidden="true">&rarr;</span>
+              {loading ? 'Signing up...' : 'Sign up'} <span aria-hidden="true">&rarr;</span>
             </span>
           </Button>
         </div>
